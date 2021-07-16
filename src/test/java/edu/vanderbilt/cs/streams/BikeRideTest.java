@@ -1,13 +1,14 @@
 package edu.vanderbilt.cs.streams;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.FileInputStream;
 
-public class BikeRideTest {
+import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class BikeRideTest {
     public static final int EXPECTED_DATA_ITEMS = 1404;
     public static final double EXPECTED_AVG_ALTITUDE = 138.85;
     public static final double EXPECTED_AVG_HEART_RATE = 122.92;
@@ -20,9 +21,12 @@ public class BikeRideTest {
         try {
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(new FileInputStream("src/main/resources/data.json"), BikeRide.class);
+            
         } catch (Exception e){
+        	System.out.println(e);
             throw new RuntimeException(e);
         }
+  
     }
 
     @Test
@@ -64,8 +68,8 @@ public class BikeRideTest {
     @Test
     public void testFusedDataFrameStream(){
         BikeRide ride = loadSampleRide();
-        assertEquals(EXPECTED_DATA_ITEMS, ride.fusedFramesStream().count());
-
+       assertEquals(EXPECTED_DATA_ITEMS, ride.fusedFramesStream().count());
+     
         assertEquals(EXPECTED_AVG_ALTITUDE,
                 ride.fusedFramesStream().mapToDouble(f -> f.altitude).average().getAsDouble(),
                 0.1);
@@ -77,7 +81,7 @@ public class BikeRideTest {
         assertEquals(EXPECTED_AVG_HEART_RATE,
                 ride.fusedFramesStream().mapToDouble(f -> f.heartRate).average().getAsDouble(),
                 0.1);
-
+      
         assertEquals(EXPECTED_AVG_VELOCITY,
                 ride.fusedFramesStream().mapToDouble(f -> f.velocity).average().getAsDouble(),
                 0.1);
@@ -85,10 +89,11 @@ public class BikeRideTest {
         assertEquals(EXPECTED_AVG_LATITUDE,
                 ride.fusedFramesStream().mapToDouble(f -> f.coordinate.latitude).average().getAsDouble(),
                 0.1);
-
+    
         assertEquals(EXPECTED_AVG_LONGITUDE,
                 ride.fusedFramesStream().mapToDouble(f -> f.coordinate.longitude).average().getAsDouble(),
                 0.1);
+
     }
 
 }
