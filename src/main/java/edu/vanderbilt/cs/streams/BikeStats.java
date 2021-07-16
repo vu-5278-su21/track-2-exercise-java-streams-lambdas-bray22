@@ -1,16 +1,12 @@
 package edu.vanderbilt.cs.streams;
 
-import java.util.Collections;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.OptionalDouble;
-import java.util.function.Function;
-import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import edu.vanderbilt.cs.streams.BikeRide.DataFrame;
 import edu.vanderbilt.cs.streams.BikeRide.LatLng;
 
 public class BikeStats {
@@ -42,7 +38,35 @@ public class BikeStats {
      * @return
      */
     public Stream<BikeRide.DataFrame> averagedDataFrameStream(int windowSize){
-        return Stream.empty();
+    	List<DataFrame> dataFrameList = this.ride.fusedFramesStream().collect(Collectors.toList());
+    	Stream<List<DataFrame>> streamList  = StreamUtils.slidingWindow(dataFrameList, windowSize);
+    	List<DataFrame> dataFrames = new ArrayList<DataFrame>();
+    	
+    	streamList.forEach(arr -> {
+    		double grade = 0.0, altitude = 0.0, velocity = 0.0, heartRate = 0.0;
+    		for (int i=0; i<arr.size(); i++) {
+    			grade += arr.get(i).grade;
+    			altitude += arr.get(i).altitude;
+    			velocity += arr.get(i).velocity;
+    			heartRate += arr.get(i).heartRate;
+    		}
+    		
+    		velocity = velocity/windowSize;
+    		DecimalFormat df = new DecimalFormat("#.###");   
+    		velocity = Double.valueOf(df.format(velocity));
+    		
+    	
+    		DataFrame averageDataFrame = new BikeRide.DataFrame(
+    				arr.get(0).coordinate, 
+    				grade, 
+    				altitude, 
+    				velocity, 
+    				heartRate);
+    		
+    		dataFrames.add(averageDataFrame);
+    	});
+    	
+    	return dataFrames.stream();
     }
 
     // @ToDo:
@@ -57,7 +81,23 @@ public class BikeStats {
     // the same.
     //
     public Stream<LatLng> locationsOfStops() {
-        return Stream.empty();
+    	ArrayList<LatLng> coordinatesList = new ArrayList<LatLng>();
+    	List<DataFrame> dataFrameList = this.ride.fusedFramesStream().filter(
+    		dataFrame -> dataFrame.velocity == 0).collect(Collectors.toList()
+    	);
+    	
+    	dataFrameList.forEach(dataFrame -> { coordinatesList.add(dataFrame.coordinate); });
+
+    	for (int i=0; i<dataFrameList.size(); i++) {
+    		for (int j=i+1; j<dataFrameList.size(); j++) { 
+    			if (dataFrameList.get(i).coordinate.equals(dataFrameList.get(j).coordinate)) {
+    				dataFrameList.remove(i);
+    			}
+    			
+    		}
+    	}
+    	
+        return coordinatesList.stream();
     }
 
 }

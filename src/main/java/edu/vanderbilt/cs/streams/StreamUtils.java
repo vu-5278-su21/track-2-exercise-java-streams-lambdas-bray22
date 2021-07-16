@@ -1,9 +1,9 @@
 package edu.vanderbilt.cs.streams;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.ToDoubleFunction;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class StreamUtils {
@@ -13,6 +13,7 @@ public class StreamUtils {
     // Create a method that returns a stream of sliding windows of <windowSize>
     // data points. You should only return complete windows. Each window should be
     // a list of the data points present at that step of the window sliding.
+	
     public static <T> Stream<List<T>> slidingWindow(List<T> data, int windowSize){
 
         // Let's assume that we have
@@ -37,11 +38,23 @@ public class StreamUtils {
         // 2. Think of how you could use IntStream.range()
         // 3. List.subLIst will be useful to you
         // 4. A windowSize < 1 should return an empty stream
-
+    	
+    	ArrayList<List<T>> windows = new ArrayList<List<T>>();
+    	
+    	if (windowSize > 0) {
+    		int index = 0;
+    		while (index < data.size() && (index+windowSize) <= data.size()) {
+    			windows.add(data.subList(index, index+windowSize));
+    			index++;
+    		}
+    	
+    		return windows.stream();
+    	} 
+    	
         return Stream.empty();
     }
-
-    /**
+    
+	/**
      * @ToDo:
      *
      * This is a higher-order function that produces an averaging function that
@@ -65,12 +78,21 @@ public class StreamUtils {
      * @return
      */
     public static <T> Function<List<T>, Double> averageOfProperty(ToDoubleFunction<T> f){
-        return (List<T> window) -> {
+       
+    	return (List<T> window) -> {
+    		int j=0;
+    		double propAverage = 0;
             // You need to update this code here to
             // return the average of the property that
             // is extracted with the function `f`
-            return 0.0;
+
+    		for (int i=0; i<window.size(); i++) {
+    			j = j + window.get(i).toString().length();
+    		}
+    		
+        	propAverage = j / window.size();
+        	
+            return propAverage;
         };
     }
-
 }

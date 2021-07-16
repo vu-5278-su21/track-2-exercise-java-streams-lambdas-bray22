@@ -1,18 +1,12 @@
 package edu.vanderbilt.cs.streams;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BikeRide {
 
@@ -125,7 +119,9 @@ public class BikeRide {
     // Hint: see Arrays.stream(...)
     //
     public DoubleStream heartRateStream() {
-        return DoubleStream.empty();
+    	DoubleStream heartRateStream = DoubleStream.of(heartRate);
+    	
+        return heartRateStream;
     }
 
     // @ToDo:
@@ -134,7 +130,9 @@ public class BikeRide {
     // stream of the specified values
     //
     public DoubleStream velocityStream() {
-        return DoubleStream.empty();
+    	DoubleStream velocityStream = DoubleStream.of(velocity);
+    	
+        return velocityStream;
     }
 
     // @ToDo:
@@ -142,7 +140,9 @@ public class BikeRide {
     // Implement this method so it returns a
     // stream of the specified values
     public DoubleStream gradeStream() {
-        return DoubleStream.empty();
+    	DoubleStream gradeStream = DoubleStream.of(grade);
+    	
+        return gradeStream;
     }
 
     // @ToDo:
@@ -150,7 +150,9 @@ public class BikeRide {
     // Implement this method so it returns a
     // stream of the specified values
     public DoubleStream altitudeStream() {
-        return DoubleStream.empty();
+    	DoubleStream altitudeStream = DoubleStream.of(altitude);
+    	
+        return altitudeStream;
     }
 
     // @ToDo:
@@ -158,7 +160,9 @@ public class BikeRide {
     // Implement this method so it returns a
     // stream of the specified values
     public Stream<LatLng> coordinateStream() {
-        return Stream.empty();
+    	Stream<LatLng> coordinateStream = Stream.of(coordinates);
+    	
+        return coordinateStream;
     }
 
 
@@ -171,7 +175,16 @@ public class BikeRide {
     // data arrays (e.g., heartRate, velocity, etc.)
     //
     public Stream<DataFrame> fusedFramesStream() {
-        return Stream.empty();
+    	ArrayList<DataFrame> DataFrameList = new ArrayList<DataFrame>();
+    	
+    	for (int i=0; i<coordinates.length; i++) {
+    		DataFrame dataFrame = new DataFrame(coordinates[i], 
+    				grade[i], altitude[i], velocity[i], heartRate[i]);
+    		
+    		DataFrameList.add(i, dataFrame);
+    	}	
+    	
+        return DataFrameList.stream();
     }
 
 
